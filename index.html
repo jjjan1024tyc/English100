@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英語名言語塊">
+<title>英語名言語塊練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4F8;--surface:#FFFFFF;--fg:#14202C;--muted:#566677;--line:#D8E0E9;
+  --accent:#1B5BD0;--accent-fg:#FFFFFF;--active:#E4EEFE;--ok:#1E7D45;--warn:#B45309;
+  --tF:#1F4E9E;--tC:#2E7D32;--tV:#C25E00;--tP:#8E24AA;
+  --hl:#FFE9A6;--hF:#D3E3FF;--hC:#D2F0D7;--hV:#FFE0C0;--hP:#F0D6F8;
+  --font-en:'Lexend',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --font-zh:'Noto Sans TC','PingFang TC','Heiti TC','Microsoft JhengHei',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E151C;--surface:#17212B;--fg:#E7EDF3;--muted:#94A4B4;--line:#26333F;
+    --accent:#78A8FF;--accent-fg:#0A1322;--active:#1B2C47;--ok:#5FD08A;--warn:#F2A65A;
+    --tF:#8DB4FF;--tC:#7FD38A;--tV:#F5A35B;--tP:#D79BEA;
+    --hl:#5C4C12;--hF:#22385F;--hC:#1F4526;--hV:#5B3711;--hP:#47244F;color-scheme:dark;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-zh);font-size:15px;line-height:1.55;
+  padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:calc(130px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.hide{display:none!important}
+
+/* 導覽 */
+.nav{display:grid;grid-template-columns:44px 1fr 44px;gap:6px;align-items:center}
+.nb{height:44px;border-radius:12px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg);cursor:pointer;display:grid;place-items:center;padding:0}
+.nb svg{width:22px;height:22px;fill:currentColor}
+.nb:disabled{opacity:.3;cursor:default}
+.pos{min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 6px;font-family:var(--font-en);font-size:15px;font-weight:600;min-width:0;white-space:nowrap}
+.pos small{font-family:var(--font-zh);font-weight:400;font-size:13px;color:var(--muted)}
+.badge{font-family:var(--font-zh);font-size:12px;font-weight:500;border-radius:999px;padding:1px 9px;border:1px solid var(--line);color:var(--muted)}
+.badge.ok{color:var(--ok);border-color:var(--ok)}
+.badge.no{color:var(--warn);border-color:var(--warn)}
+.bar{display:flex;gap:8px 12px;align-items:center;justify-content:space-between}
+.sum{font-size:13px;color:var(--muted);margin:0}
+.sum b{color:var(--fg);font-family:var(--font-en)}
+.chip{font-size:14px;font-weight:500;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 12px;min-height:36px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+
+/* 三階段 */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:600;padding:4px;border-radius:9px;cursor:pointer;min-height:38px;line-height:1.2}
+.seg button[aria-checked="true"]{background:var(--surface);color:var(--fg);box-shadow:0 0 0 1px var(--accent) inset}
+.seg button span{display:block;font-size:11px;font-weight:400;opacity:.85}
+.help{font-size:13px;color:var(--muted);margin:0}
+.help .sw{font-size:inherit}
+
+/* 句子區塊 */
+.blk{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 12px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.blk.on{background:var(--active);border-color:var(--accent)}
+.bh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lb{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.sp{border:1px solid var(--line);background:var(--bg);border-radius:999px;min-height:44px;min-width:84px;padding:0 16px;cursor:pointer;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.sp svg{width:18px;height:18px;fill:currentColor}
+.en{font-family:var(--font-en);font-size:19px;line-height:1.55;font-weight:500;overflow-wrap:anywhere}
+.zu{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.zh{font-size:15px;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+body.nozh .zh{display:none}
+body.nozh .st3 .zh,body.nozh .st4 .zh{display:block}
+.en.hid{color:transparent;cursor:pointer;-webkit-user-select:none;user-select:none}
+.en.hid .sw{text-decoration-color:var(--fg)}
+
+/* 語塊標示：底色 */
+.ck{cursor:pointer;border-radius:4px;padding:1px 3px;margin:0 -1px;background:var(--hl);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.ck-color .ck.tF,.ck-color .bl.tF{background:var(--hF)}
+.ck-color .ck.tC,.ck-color .bl.tC{background:var(--hC)}
+.ck-color .ck.tV,.ck-color .bl.tV{background:var(--hV)}
+.ck-color .ck.tP,.ck-color .bl.tP{background:var(--hP)}
+.ck-off .ck{background:none;padding:0;margin:0;cursor:inherit}
+.legend{display:none;flex-wrap:wrap;gap:4px 8px;font-size:12px;color:var(--fg)}
+.ck-color .legend{display:flex}
+.legend span{border-radius:4px;padding:1px 8px}
+.legend .tF{background:var(--hF)}.legend .tC{background:var(--hC)}.legend .tV{background:var(--hV)}.legend .tP{background:var(--hP)}
+/* 被換掉的字：粗體加實心底線 */
+.sw{font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+
+/* 填空：文字隱形，長度與換行都跟原文一樣 */
+.bl{cursor:pointer;color:transparent;-webkit-user-select:none;user-select:none;border-bottom:2px solid var(--muted);border-radius:4px 4px 0 0;padding:1px 3px;margin:0 -1px;background:var(--hl);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.bl.c{border-bottom:0}
+.bl.sl{background:var(--active);border-bottom-color:var(--accent);font-weight:700;padding:0;margin:0}
+.bl.rv{color:var(--fg);border-bottom-color:var(--accent)}
+.bl:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ck-off .bl:not(.sl){background:transparent}
+.msg{font-size:14px;min-height:20px;margin:0}
+
+.ctl2{display:flex;flex-wrap:nowrap;gap:8px}
+.ctl2 button{flex:1 1 0;min-width:0;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:15px;font-weight:500;padding:8px 10px}
+.ctl2 .yes{background:var(--ok);border-color:var(--ok);color:#fff}
+.ctl2 .no{background:transparent;border-color:var(--warn);color:var(--warn)}
+.mark{display:flex;flex-direction:column;gap:8px;padding-top:2px}
+
+/* 設定 */
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 14px}
+summary{cursor:pointer;font-weight:500;font-size:14px;min-height:44px;display:flex;align-items:center}
+details .inner{display:flex;flex-direction:column;gap:14px;padding:6px 0 14px}
+.row{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lbl{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+select{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;min-height:44px}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;min-height:44px}
+.check input{width:22px;height:22px;accent-color:var(--accent);margin:0}
+.plain{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:10px 14px;min-height:44px;cursor:pointer}
+.tip-s{font-size:13px;color:var(--muted);margin:0}
+#note{display:none;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface)}
+#note.show{display:block}
+
+/* 句子總覽 */
+#picker{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding-top:max(12px,env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#picker .in{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.ph{display:flex;gap:8px;align-items:center}
+.ph input{flex:1;min-width:0;font:inherit;font-size:16px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-height:48px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px}
+.cell{font-family:var(--font-en);font-size:16px;min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0}
+.cell.ok{border-color:var(--ok);color:var(--ok);font-weight:600}
+.cell.no{border-color:var(--warn);color:var(--warn);font-weight:600}
+.cell.cur{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.legend2{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.rows button{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;gap:10px;min-height:48px}
+.rows .n{font-family:var(--font-en);color:var(--muted);min-width:2.4em}
+.rows .t{font-family:var(--font-en);font-size:15px;overflow-wrap:anywhere;min-width:0}
+.empty{color:var(--muted);text-align:center;padding:24px 0;margin:0}
+
+/* 說明列與底部 */
+#tipbar{position:fixed;left:0;right:0;bottom:calc(118px + env(safe-area-inset-bottom,0px));z-index:30;display:none;padding:0 max(16px,env(safe-area-inset-left,0px))}
+#tipbar.show{display:block}
+#tipbar .in{max-width:680px;margin:0 auto;background:var(--fg);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#tipbar b{font-family:var(--font-en)}
+#tipbar .l{font-size:12px;opacity:.8}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.dock .in{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+.d1{display:grid;grid-template-columns:46px 1fr 46px 72px;gap:6px;align-items:center}
+.spd{border:1px solid var(--line);background:var(--bg);border-radius:12px;font-family:var(--font-en);font-size:14px;font-weight:500;cursor:pointer;min-height:44px}
+.d2{display:grid;grid-template-columns:1fr;gap:8px}
+.go{min-height:46px;border-radius:14px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.go svg{width:22px;height:22px;fill:currentColor}
+@media (prefers-reduced-motion:no-preference){.blk,.bl,.sp{transition:background-color .15s,border-color .15s,color .15s}}
+</style>
+</head>
+<body class="ck-ul">
+<div class="wrap">
+  <div class="bar"><p class="sum"><span id="sum"></span> <span class="badge" id="badge" hidden></span></p><button type="button" class="chip" id="review" aria-pressed="false">今日複習</button></div>
+  <div id="note" role="status"></div>
+
+  <div class="seg" role="tablist" aria-label="三個階段" id="stages">
+    <button type="button" role="tab" data-s="1" aria-checked="true">① 看＋聽</button>
+    <button type="button" role="tab" data-s="2" aria-checked="false">② 遮語塊</button>
+    <button type="button" role="tab" data-s="3" aria-checked="false">③ 換名詞</button>
+    <button type="button" role="tab" data-s="4" aria-checked="false">④ 中翻英</button>
+  </div>
+  <div class="legend"><span class="tF">句型框架</span><span class="tC">搭配詞</span><span class="tV">動詞片語</span><span class="tP">固定表達／諺語</span></div>
+
+  <main id="stage"></main>
+
+  <details>
+    <summary>更多設定</summary>
+    <div class="inner">
+      <div class="row">
+        <div class="lbl">朗讀聲音</div>
+        <div class="seg" role="radiogroup" aria-label="聲音：女聲、男聲或輪流" id="gender">
+        <button type="button" role="radio" data-g="f" aria-checked="true">女聲</button>
+        <button type="button" role="radio" data-g="m" aria-checked="false">男聲</button>
+        <button type="button" role="radio" data-g="b" aria-checked="false">女男輪流</button>
+      </div>
+      </div>
+      <div class="row">
+        <div class="lbl">語塊標示</div>
+        <div class="seg" role="radiogroup" aria-label="語塊標示" id="ck">
+          <button type="button" role="radio" data-c="ul" aria-checked="true">單色底色</button>
+          <button type="button" role="radio" data-c="color" aria-checked="false">依類型配色</button>
+          <button type="button" role="radio" data-c="off" aria-checked="false">關閉</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="lbl"><label for="gap">連播時的停頓（可用來跟讀）</label></div>
+        <select id="gap"><option value="0.5">0.5 秒</option><option value="1">1 秒</option><option value="2">2 秒</option><option value="3">3 秒</option></select>
+      </div>
+      <label class="check"><input type="checkbox" id="zh" checked> 顯示中文（第③④階段一定會顯示）</label>
+      <div class="row">
+        <div class="lbl">學習紀錄</div>
+        <button type="button" class="plain" id="clear">清除這台裝置上的學習紀錄</button>
+        <p class="tip-s">學習紀錄只存在這台裝置的瀏覽器裡。請不要用無痕瀏覽，也不要清除網站資料，否則紀錄會消失。</p>
+      </div>
+      <p class="tip-s"><b>沒聲音時：</b>先檢查側邊靜音鍵與音量。</p>
+    </div>
+  </details>
+</div>
+
+<div id="picker" role="dialog" aria-label="選擇句子" hidden>
+  <div class="in">
+    <div class="ph"><input type="search" id="search" placeholder="搜尋英文單字或中文" aria-label="搜尋句子"><button type="button" class="chip" id="pclose">關閉</button></div>
+    <div class="legend2"><span style="color:var(--ok)">■ 已會</span><span style="color:var(--warn)">■ 還不熟</span><span>□ 尚未練習</span></div>
+    <div class="grid" id="grid"></div>
+    <ul class="rows" id="rows" hidden></ul>
+    <p class="empty" id="empty" hidden>找不到符合的句子。</p>
+  </div>
+</div>
+
+<div id="tipbar" role="status"><div class="in" id="tipin"></div></div>
+
+<div class="dock">
+  <div class="in">
+    <div class="d1">
+  
+      <button type="button" class="nb" id="prev" aria-label="上一句"><svg viewBox="0 0 24 24"><path d="M15.4 5 8.4 12l7 7 1.6-1.6L11.6 12l5.4-5.4z"/></svg></button>
+      <button type="button" class="pos" id="pos" aria-haspopup="dialog"><span id="posTxt"></span><small>▾</small></button>
+      <button type="button" class="nb" id="next" aria-label="下一句"><svg viewBox="0 0 24 24"><path d="m8.6 5-1.6 1.6L12.4 12 7 17.4 8.6 19l7-7z"/></svg></button>
+  
+      <button type="button" class="spd" id="spd" aria-label="語速">0.9×</button>
+    </div>
+    <div class="d2">
+      <button type="button" class="go" id="play"><svg id="icoPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="icoPause" viewBox="0 0 24 24" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg><span id="playTxt">連播三句</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+var D = [{"e":"Education is the door to freedom.","z":"教育是通往自由的大門。","m":"Education {F|is the door to|X is the door to Y} freedom.","x":[["Reading is the door to knowledge.","閱讀是通往知識的大門。"],["Music is the door to happiness.","音樂是通往快樂的大門。"]],"u":[["教育","自由"],["閱讀","知識"],["音樂","快樂"]]},{"e":"Challenges make life interesting.","z":"挑戰使生活變得有趣。","m":"Challenges {C|make life interesting|make + N + adj}.","x":[["Friends make life interesting.","朋友讓生活變得有趣。"],["New hobbies make life interesting.","新的嗜好讓生活變得有趣。"]],"u":[["挑戰"],["朋友"],["新的嗜好"]]},{"e":"Difficulties make life worth living.","z":"困難讓人生更有價值。","m":"Difficulties make life {C|worth living|be worth + V-ing}.","x":[["Kindness makes life worth living.","善良讓人生值得活下去。"],["Small joys make daily life worth living.","小小的喜悅讓日常生活值得過下去。"]],"u":[["困難讓人生"],["善良"],["小小的喜悅","日常"]]},{"e":"Nothing in the world can take the place of persistence.","z":"世界上沒有任何東西可以取代堅持。","m":"{F|Nothing in the world can|Nothing + can + V} {V|take the place of|take the place of + N} persistence.","x":[["Nothing in the world can take the place of hard work.","世上沒有什麼東西能取代努力。"],["Nothing in the world can take the place of a mother's love.","世上沒有什麼東西能取代母愛。"]],"u":[["堅持"],["努力"],["母愛"]]},{"e":"It's impossible to defeat a person who never gives up.","z":"要打敗一個永不放棄的人是不可能的。","m":"{F|It's impossible to|It's + adj + to + V} defeat a person who never {V|gives up|give up}.","x":[["It's impossible to stop a runner who never gives up.","要阻止一位永不放棄的跑者是不可能的。"],["It's impossible to beat a player who never gives up.","要打敗一位永不放棄的球員是不可能的。"]],"u":[["打敗","人","永不"],["阻止","跑者"],["打敗","球員"]]},{"e":"The most important thing in life is to have a great aim and the determination to attain it.","z":"人生中最重要的事，就是擁有遠大的目標，並下定決心去實現它。","m":"{F|The most important thing in life is|The most important thing is (to) V} to have a {C|great aim|great aim} and the {C|determination to|determination to + V} attain it.","x":[["The most important thing in life is to have a great aim and the determination to follow it.","人生中最重要的事，就是擁有遠大的目標，以及追隨它的決心。"],["The most important thing in life is to have a great aim and the determination to learn from mistakes.","人生中最重要的事，就是擁有遠大的目標，以及從錯誤中學習的決心。"]],"u":[["實現"],["追隨"],["錯誤","學習"]]},{"e":"If you can dream it, you can do it.","z":"只要你想得到，你就做得到。","m":"{F|If you can|If you can V it, you can V it} dream it, {F|you can|If you can V it, you can V it} do it.","x":[["If you can read it, you can write it.","如果你讀得懂，你就寫得出來。"],["If you can imagine it, you can build it.","只要你想像得到，你就能把它打造出來。"]],"u":[["想得到"],["讀得懂","寫得出來"],["想像得到","打造"]]},{"e":"Actions speak louder than words.","z":"行動比言語更有說服力。","m":"{P|Actions speak louder than words|諺語}.","x":[["He said sorry many times, but actions speak louder than words.","他說了很多次對不起，但是行動比言語更有說服力。"],["Don't only promise to help your classmates. Actions speak louder than words.","別只是承諾要幫助同學。行動比言語更有說服力。"]],"u":[[],["說了很多次對不起"],["別只是承諾","幫助","同學"]]},{"e":"Deeds are more powerful than words.","z":"行為比言語更有力量。","m":"Deeds are {F|more powerful than|A is more + adj + than B} words.","x":[["Love is more powerful than hate.","愛比恨更有力量。"],["Knowledge is more powerful than money.","知識比金錢更有力量。"]],"u":[["行為","言語"],["愛","恨"],["知識","金錢"]]},{"e":"Mistakes show us what we still need to learn.","z":"從錯誤中，我們知道自己還需要學什麼。","m":"Mistakes {V|show us what|show sb. what + S + V} we still need to learn.","x":[["Exams show us what we need to review.","考試讓我們知道需要複習什麼。"],["Questions show us what we do not know.","問題讓我們看見自己不懂的地方。"]],"u":[["錯誤","還需要","學"],["考試","複習"],["問題","不懂"]]},{"e":"Difficult times show us who our true friends are.","z":"艱困的時刻讓我們看清誰才是真正的朋友。／患難見真情。","m":"{C|Difficult times|Difficult times} {V|show us who|show sb. who + S + V} our {C|true friends|true friends} are.","x":[["Difficult times at school show us who our true friends are.","在學校遇到困難的時候，讓我們看清誰才是真正的朋友。"],["Difficult times in a team show us who our true friends are.","團隊遇到困難的時候，讓我們看清誰才是真正的朋友。"]],"u":[[],["學校"],["團隊"]]},{"e":"It doesn't cost anything to be nice.","z":"做個好人，一點也不費力。","m":"{F|It doesn't cost anything to|It doesn't cost anything to + V} be nice.","x":[["It doesn't cost anything to say thank you.","說聲謝謝不用花一毛錢。"],["It doesn't cost anything to smile at a stranger.","對陌生人微笑不用花一毛錢。"]],"u":[["好人"],["謝謝"],["微笑","陌生人"]]},{"e":"Believe in what you can become.","z":"相信自己的潛力。","m":"{V|Believe in|believe in + N/wh-} what you can become.","x":[["Believe in your classmates.","相信你的同學。"],["Believe in your dream.","相信你的夢想。"]],"u":[["潛力"],["同學"],["夢想"]]},{"e":"Think and your mind will stay fresh.","z":"思考能使大腦保持清醒。","m":"{F|Think and|Imperative + and + S will V} your mind will {C|stay fresh|stay + adj}.","x":[["Think and your brain will stay fresh.","多思考，你的大腦就能保持清醒。"],["Think and your memory will stay fresh.","多思考，你的記憶力就能保持敏銳。"]],"u":[["大腦"],["大腦"],["記憶力"]]},{"e":"You win because you think you can.","z":"你會成功，是因為你相信自己辦得到。","m":"You win {F|because|because + S + V} you think you can.","x":[["She wins because she practices every day.","她會贏，是因為她每天練習。"],["We lose because we stop trying.","我們會輸，是因為我們不再嘗試。"]],"u":[["成功","相信"],["贏","每天練習"],["輸","不再嘗試"]]},{"e":"By helping others, you will feel good about yourself.","z":"幫助他人，其樂無窮。","m":"{F|By helping others|By + V-ing (方式)}, you will {C|feel good about|feel good about + N} yourself.","x":[["By helping others, you will feel good about your day.","幫助別人，你會對自己的一天感到滿意。"],["By helping others, you will feel good about your school.","幫助別人，你會對自己的學校生活感到滿意。"]],"u":[[],["一天"],["學校"]]},{"e":"Lost time is never found again.","z":"時間一去不復返。","m":"{C|Lost time|p.p. + N (過去分詞當形容詞)} is never found again.","x":[["Lost time is hard to get back.","失去的時間很難再找回來。"],["Lost time can be a lesson for students.","逝去的時間能讓學生記取教訓。"]],"u":[["一去不復返"],["很難","找回來"],["教訓","學生"]]},{"e":"Rome wasn't built in a day.","z":"羅馬不是一天造成的。","m":"{P|Rome wasn't built in a day|諺語}.","x":[["Your English is improving slowly, but Rome wasn't built in a day.","你的英文進步得很慢，但是羅馬不是一天造成的。"],["Learning to code takes time. Rome wasn't built in a day.","學寫程式需要時間。羅馬不是一天造成的。"]],"u":[[],["英文","進步得很慢"],["學寫程式需要時間"]]},{"e":"Never put off until tomorrow what you can do today.","z":"永遠不要把今天能做的事拖延到明天。","m":"{P|Never put off until tomorrow what you can do today|諺語（含 put off）}.","x":[["Do your homework now. Never put off until tomorrow what you can do today.","現在就去寫功課。今天能做的事，絕對不要拖到明天。"],["Clean your room first. Never put off until tomorrow what you can do today.","先整理你的房間。今天能做的事，絕對不要拖到明天。"]],"u":[[],["現在就去寫功課"],["先整理你的房間"]]},{"e":"Remember to smile when you wake up.","z":"記得在醒來的時候微笑。","m":"{V|Remember to|remember to + V} smile when you {V|wake up|wake up}.","x":[["Remember to say hello when you wake up.","醒來的時候，記得向人問好。"],["Remember to stretch when you wake up.","醒來的時候，記得伸展一下身體。"]],"u":[["微笑"],["問好"],["伸展"]]},{"e":"Oversleeping will never make your dreams come true.","z":"賴床永遠無法讓你的夢想成真。","m":"Oversleeping will never {C|make your dreams come true|make + N + V(原形)}.","x":[["Hard work will make your dreams come true.","勤奮努力會讓你的夢想成真。"],["Practice will make your dreams come true.","練習會讓你的夢想成真。"]],"u":[["賴床","永遠無法"],["勤奮努力"],["練習"]]},{"e":"Praise twice as much as you criticize.","z":"稱讚的次數要比批評多一倍。","m":"Praise {F|twice as much as|twice as + adj/adv + as} you criticize.","x":[["Study twice as much as you play.","讀書的時間要是玩樂時間的兩倍。"],["Listen twice as much as you speak.","傾聽的時間要是說話時間的兩倍。"]],"u":[["稱讚","批評"],["讀書","玩樂"],["傾聽","說話"]]},{"e":"The way to be happy is to make others happy.","z":"獲得快樂的方法，就是先讓別人快樂。","m":"{F|The way to be happy is to|The way to V is to V} {C|make others happy|make + sb. + adj}.","x":[["The way to be happy is to make others happy, so share your lunch.","想要快樂，就要讓別人快樂，所以和別人分享你的午餐吧。"],["The way to be happy is to make others happy, so thank your teacher today.","想要快樂，就要讓別人快樂，所以今天向你的老師道聲謝吧。"]],"u":[[],["分享","午餐"],["今天向你的老師道聲謝"]]},{"e":"Life is too short to spend time worrying.","z":"人生太短暫，不要把時間花在擔憂上。","m":"Life is {F|too short to|too + adj + to + V} {V|spend time worrying|spend time + V-ing}.","x":[["Life is too short to spend time worrying about tests.","人生太短暫，不該把時間花在擔心考試上。"],["Life is too short to spend time worrying about small things.","人生太短暫，不該把時間花在擔心小事上。"]],"u":[["人生"],["擔心考試"],["擔心小事"]]},{"e":"What pains us trains us.","z":"讓我們痛苦的事，也在磨練我們。","m":"{F|What pains us|What + V + sb. (名詞子句當主詞)} trains us.","x":[["What pains us teaches us a lot.","讓我們痛苦的事，教會我們很多。"],["What pains us helps us grow.","讓我們痛苦的事，幫助我們成長。"]],"u":[["磨練我們"],["教會","很多"],["幫助","成長"]]},{"e":"What doesn't kill us makes us stronger.","z":"沒有擊垮我們的事，會讓我們更強大。","m":"{F|What doesn't kill us|What + V + sb. (名詞子句當主詞)} {C|makes us stronger|make + sb. + adj}.","x":[["What doesn't kill us makes us stronger, even a very hard test.","沒有擊垮我們的事，會讓我們更強大，就連很困難的考試也一樣。"],["What doesn't kill us makes us stronger, even a long run.","沒有擊垮我們的事，會讓我們更強大，就連一趟長跑也一樣。"]],"u":[[],["就連","很困難的考試"],["就連","一趟長跑"]]},{"e":"What hurts us most teaches us the best.","z":"最讓我們受傷的事，也最能教導我們。","m":"{F|What hurts us most|What + V + sb. (名詞子句當主詞)} teaches us the best.","x":[["What hurts us most helps us grow.","最讓我們受傷的事，最能幫助我們成長。"],["What hurts us most teaches us courage.","最讓我們受傷的事，教會我們勇氣。"]],"u":[["教導我們","最能"],["幫助","成長"],["勇氣"]]},{"e":"The dictionary is the only place where success comes before work.","z":"只有在字典裡，「成功」才會排在「努力」之前。","m":"The dictionary is {F|the only place where|the only place where + S + V} success {V|comes before|come before} work.","x":[["The menu is the only place where cake comes before dinner.","菜單是唯一會把蛋糕排在晚餐之前的地方。"],["The kitchen is the only place where cooking comes before eating.","廚房是唯一把下廚排在吃飯之前的地方。"]],"u":[["字典","成功","努力"],["菜單","蛋糕","晚餐"],["廚房","下廚","吃飯"]]},{"e":"To be a great leader, you must have great hopes!","z":"想成為偉大的領導者，就必須懷抱遠大的抱負。","m":"{F|To be a great leader, you must|To V, you must V} have great hopes!","x":[["To be a great leader, you must listen to others.","想成為優秀的領導者，你必須傾聽別人的意見。"],["To be a great leader, you must be kind to every team member.","想成為優秀的領導者，你必須善待每一位團隊成員。"]],"u":[["遠大的抱負"],["傾聽","別人的意見"],["善待","每一位團隊成員"]]},{"e":"He who is ashamed of asking is ashamed of learning.","z":"以發問為恥的人，就是以學習為恥。","m":"{F|He who|He who + V (…的人)} {C|is ashamed of|be ashamed of + N/V-ing} asking is {C|ashamed of|be ashamed of + N/V-ing} learning.","x":[["He who is ashamed of mistakes is ashamed of growing.","以犯錯為恥的人，也以成長為恥。"],["He who is ashamed of failing is ashamed of trying.","以失敗為恥的人，也以嘗試為恥。"]],"u":[["發問","學習"],["犯錯","成長"],["失敗","嘗試"]]},{"e":"He who fails to plan, plans to fail.","z":"不做計畫的人，就是在計畫失敗。","m":"{F|He who|He who + V (…的人)} {V|fails to plan|fail to + V}, {V|plans to fail|plan to + V}.","x":[["He who fails to plan his study time plans to fail.","不規劃讀書時間的人，就是在規劃失敗。"],["He who fails to plan his trip plans to fail.","不規劃旅程的人，就是在規劃失敗。"]],"u":[[],["讀書時間"],["旅程"]]},{"e":"He who makes no mistakes makes nothing.","z":"不犯錯的人，什麼事也做不成。","m":"{F|He who|He who + V (…的人)} {V|makes no mistakes|make mistakes} makes nothing.","x":[["He who makes no mistakes makes no progress.","不犯錯的人，不會有任何進步。"],["He who makes no mistakes learns nothing.","不犯錯的人，什麼也學不到。"]],"u":[["什麼事也做不成"],["進步"],["什麼也學不到"]]},{"e":"Imagination is more important than knowledge.","z":"想像力比知識更重要。","m":"Imagination {F|is more important than|A is more + adj + than B} knowledge.","x":[["Family is more important than money.","家人比金錢更重要。"],["Health is more important than homework.","健康比功課更重要。"]],"u":[["想像力","知識"],["家人","金錢"],["健康","功課"]]},{"e":"The hotter the fire, the harder the steel.","z":"火燒得越旺，鋼鐵就越堅硬。","m":"{F|The hotter the fire, the harder the steel|The + 比較級, the + 比較級}.","x":[["The harder the test, the more you learn.","考試越難，你學到的越多。"],["The more you read, the better you write.","讀得越多，寫得越好。"]],"u":[[],["考試","學到的越多"],["讀得越多","寫得越好"]]},{"e":"Do not let what you cannot do interfere with what you can do.","z":"絕對不要讓你做不到的事，妨礙你做得到的事。","m":"{F|Do not let|Don't let + sb./sth. + V} what you cannot do {V|interfere with|interfere with} what you can do.","x":[["Do not let fear interfere with your dream.","別讓恐懼妨礙你的夢想。"],["Do not let homework interfere with your sleep.","別讓功課影響你的睡眠。"]],"u":[["做不到"],["恐懼","夢想"],["功課","睡眠"]]},{"e":"It's how you deal with failure that determines how you achieve success.","z":"你如何面對失敗，決定了你如何獲得成功。","m":"{F|It's how you deal with failure that|It is + 強調部分 + that (強調句)} determines how you achieve success.","x":[["It's how you deal with failure that makes you stronger.","是你面對失敗的方式，讓你變得更強大。"],["It's how you deal with failure that shows your character.","是你面對失敗的方式，展現出你的品格。"]],"u":[["決定","獲得成功"],["讓你變得更強大"],["展現","品格"]]},{"e":"Help others achieve their dreams and you will achieve yours.","z":"幫助別人實現夢想，你也將實現自己的夢想。","m":"{V|Help others achieve|help + sb. (to) V} their dreams {F|and you will|Imperative + and + S will V} achieve yours.","x":[["Help others achieve their goals and you will reach yours.","幫助別人達成目標，你也會達成自己的目標。"],["Help others achieve success and you will find happiness.","幫助別人獲得成功，你就會找到快樂。"]],"u":[["實現夢想","實現自己的夢想"],["達成目標","達成自己的目標"],["成功","找到快樂"]]},{"e":"The achievement of your goal is assured the moment you commit yourself to it.","z":"一旦你全心投入，目標的達成就有了保證。","m":"The achievement of your goal is assured {F|the moment|the moment + S + V (一…就…)} you {V|commit yourself to|commit oneself to + N/V-ing} it.","x":[["Your English will improve the moment you commit yourself to practice.","一旦你下定決心投入練習，你的英文就會進步。"],["Your team will become stronger the moment you commit yourself to training.","一旦你下定決心投入訓練，你的團隊就會變得更強。"]],"u":[["目標","達成","保證"],["英文","進步","練習"],["團隊","變得更強","訓練"]]},{"e":"You become a winner the moment you believe you can win.","z":"一旦你相信自己會贏，你就成為贏家了。","m":"You {C|become a winner|become + N} {F|the moment|the moment + S + V (一…就…)} you believe you can win.","x":[["You become a winner the moment you open a book.","你一翻開書，就成為贏家了。"],["You become a winner the moment you finish your first race.","你一跑完人生第一場比賽，就成為贏家了。"]],"u":[["相信","贏"],["翻開書"],["跑完人生第一場比賽"]]},{"e":"Time and energy spent worrying are wasted.","z":"為擔憂煩惱所花的時間與精力，都是白費。","m":"{C|Time and energy|Time and energy} {V|spent worrying|spend + time + V-ing} are wasted.","x":[["Time and energy spent worrying about tests are not useful.","花在擔心考試上的時間和精力都沒有用處。"],["Time and energy spent worrying about other people's opinions are not useful.","花在擔心別人看法上的時間和精力都沒有用處。"]],"u":[["白費"],["擔心考試","用處"],["擔心別人看法","用處"]]},{"e":"The best way to predict the future is to create it.","z":"預測未來最好的方法，就是創造未來。","m":"{F|The best way to predict the future is to|The way to V is to V} create it.","x":[["The best way to predict the future is to make a plan.","預測未來最好的方法，就是訂定計畫。"],["The best way to predict the future is to study the past.","預測未來最好的方法，就是研究過去。"]],"u":[["創造"],["訂定計畫"],["研究過去"]]},{"e":"Your brain needs exercise to stay fit, just like your body.","z":"你的大腦就像身體一樣，需要鍛鍊才能保持健康。","m":"Your brain needs exercise to {C|stay fit|stay + adj}, {F|just like|just like + N} your body.","x":[["Your pet needs a walk to stay fit, just like you.","你的寵物需要散步才能保持健康，就像你一樣。"],["Your heart needs exercise to stay fit, just like your legs.","你的心臟需要運動才能保持健康，就像你的雙腿一樣。"]],"u":[["大腦","需要鍛鍊","身體"],["寵物","散步"],["心臟","雙腿"]]},{"e":"Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.","z":"我們最大的弱點就是輕言放棄。成功最有把握的方法，就是再試一次。","m":"Our greatest weakness {V|lies in|lie in + N/V-ing} {V|giving up|give up}. {F|The most certain way to succeed is|The way to V is to V} always to try just {C|one more time|one more time}.","x":[["Our greatest fear lies in giving up. The most certain way to succeed is always to try just one more time.","我們最大的恐懼在於放棄。成功最有把握的方法，就是再多試一次。"],["Our biggest problem lies in giving up. The most certain way to succeed is to try one more time.","我們最大的問題在於放棄。成功最有把握的方法，就是再試一次。"]],"u":[["最大的弱點","再試一次"],["恐懼"],["最大的問題"]]},{"e":"Putting off an easy thing makes it hard. Putting off a hard thing makes it impossible.","z":"把簡單的事拖著不做，會讓它變困難；把困難的事拖著不做，會讓它變得不可能完成。","m":"{V|Putting off|put off + N/V-ing} an easy thing {F|makes it hard|make + it + adj}. {V|Putting off|put off + N/V-ing} a hard thing {F|makes it impossible|make + it + adj}.","x":[["Putting off a small job makes it hard. Putting off a big job makes it impossible.","把小事拖著不做，會讓它變困難；把大事拖著不做，會讓它變得不可能完成。"],["Putting off easy homework makes it hard. Putting off hard homework makes it impossible.","把簡單的功課拖著不做，會讓它變困難；把困難的功課拖著不做，會讓它變得不可能完成。"]],"u":[["簡單的事","困難的事"],["小事","大事"],["簡單的功課","困難的功課"]]},{"e":"The only good luck many great men ever had was being born with the ability to overcome bad luck.","z":"許多偉人唯一的好運，就是天生具備克服厄運的能力。","m":"The only good luck many great men ever had was {V|being born with|be born with + N} the {C|ability to|ability to + V} {V|overcome|overcome + N} bad luck.","x":[["The only good luck many great artists ever had was being born with the ability to overcome fear.","許多偉大的藝術家唯一的好運，就是天生具備克服恐懼的能力。"],["The only good luck many top players ever had was being born with the ability to overcome pain.","許多頂尖球員唯一的好運，就是天生具備克服痛苦的能力。"]],"u":[["許多偉人","唯一的好運","厄運"],["藝術家","恐懼"],["頂尖球員","痛苦"]]},{"e":"The greatest discovery of our generation is that a human being can alter his life by altering his attitudes.","z":"我們這一代最偉大的發現是：人可以藉由改變態度來改變自己的人生。","m":"{F|The greatest discovery of our generation is that|The + 最高級 + N + is that + S V} a human being can alter his life {F|by altering|by + V-ing} his attitudes.","x":[["The greatest discovery of our generation is that a student can change his future by altering his habits.","我們這一代最偉大的發現，就是學生可以藉由改變習慣來改變自己的未來。"],["The greatest discovery of our generation is that a person can improve his health by altering his diet.","我們這一代最偉大的發現，就是人可以藉由改變飲食來改善自己的健康。"]],"u":[["人","改變","人生","態度"],["學生","改變自己的未來"],["人","改善","健康"]]},{"e":"It is not what happens to you; it is what you do with what happens to you.","z":"重要的不是在你身上發生了什麼，而是你如何應對發生在你身上的事。","m":"{F|It is not|It is not A; it is B} what happens to you; {F|it is|It is not A; it is B} what you do with what happens to you.","x":[["It is not what you have; it is what you do with what you have.","重要的不是你擁有什麼，而是你如何運用你所擁有的。"],["It is not how fast you run; it is how long you keep running.","重要的不是你跑得多快，而是你能持續跑多久。"]],"u":[["發生了","發生在"],[],["多快","持續跑多久"]]},{"e":"It is not what other people think of you, it is what you think of yourself that counts.","z":"重要的不是別人怎麼看你，而是你怎麼看待自己。","m":"{F|It is not|It is not A, it is B} what other people {V|think of|think of} you, {F|it is|It is not A, it is B} what you think of yourself that counts.","x":[["It is not what teachers think of you, it is what you think of yourself that counts.","重要的不是老師怎麼看你，而是你怎麼看自己。"],["It is not what people think of your grades, it is what you think of your effort that counts.","重要的不是別人怎麼看你的成績，而是你怎麼看待自己的努力。"]],"u":[["別人","自己"],["老師"],["成績","努力"]]},{"e":"As long as you are dreaming, believing, and doing, you can go anywhere and achieve anything.","z":"只要你有夢想、有信念、有行動，你就可以無往不利，無所不勝。","m":"{F|As long as|as long as + S + V (只要)} you are dreaming, believing, and doing, you can go anywhere and achieve anything.","x":[["As long as you are reading, writing, and speaking, you can learn any language.","只要你持續閱讀、寫作和開口說，你就能學會任何一種語言。"],["As long as you are studying, practicing, and improving, you can go anywhere.","只要你不斷學習、練習和進步，你就能去任何地方。"]],"u":[["夢想","信念","行動","無往不利","無所不勝"],["閱讀","開口說","語言"],["學習","練習","進步"]]},{"e":"Whatever you do, do it whole-heartedly.","z":"無論你做什麼，都要全心全意地做。","m":"{F|Whatever you do|Whatever + S + V, ...}, do it whole-heartedly.","x":[["Whatever you do, do it with a smile.","無論你做什麼，都要面帶微笑去做。"],["Whatever you do, do your homework carefully.","無論你做什麼，都要認真寫功課。"]],"u":[["全心全意"],["微笑"],["認真寫功課"]]},{"e":"Success is how high you bounce when you hit bottom.","z":"成功就是你跌到谷底後，能反彈多高。","m":"Success is {F|how high you bounce|how + adj + S + V (名詞子句)} when you {P|hit bottom|hit bottom (跌到谷底)}.","x":[["Courage is how high you bounce when you hit bottom.","勇氣就是你跌到谷底後能彈得多高。"],["Hope is how high you bounce when you hit bottom.","希望就是你跌到谷底後能彈得多高。"]],"u":[["成功"],["勇氣"],["希望"]]},{"e":"Success is measured not by how much money you have made, but by how many people you have helped.","z":"衡量成功的標準不是看你賺了多少錢，而是看你幫助了多少人。","m":"Success {V|is measured|be measured by} {F|not by|not by A but by B} how much money you have made, {F|but by|not by A but by B} how many people you have helped.","x":[["A good school is measured not by how big its buildings are, but by how happy its students are.","衡量一所好學校，不是看校舍有多大，而是看學生有多快樂。"],["A friend is measured not by how many gifts he gives, but by how often he listens.","衡量一位朋友，不是看他送了多少禮物，而是看他多常傾聽。"]],"u":[["成功","賺了多少錢","幫助了多少人"],["好學校","校舍","學生"],["朋友","禮物","傾聽"]]},{"e":"Great works are performed not by strength, but by perseverance.","z":"完成偉大的事業不在於體力，而在於堅忍不拔的毅力。","m":"Great works are performed {F|not by|not by A, but by B} strength, {F|but by|not by A, but by B} perseverance.","x":[["Good grades are earned not by luck, but by effort.","好成績不是靠運氣得來的，而是靠努力。"],["Great teams are built not by stars, but by working together.","優秀的團隊不是靠明星打造的，而是靠大家一起努力。"]],"u":[["完成","偉大的事業","體力","堅忍不拔的毅力"],["好成績","得來","努力"],["團隊","打造","一起努力"]]},{"e":"Man is not judged by his words, but by his deeds.","z":"評斷一個人，不是看他說了什麼，而是看他做了什麼。","m":"Man {F|is not judged by|not (judged) by A, but by B} his words, {F|but by|not (judged) by A, but by B} his deeds.","x":[["A student is not judged by his grades, but by his effort.","評斷一位學生，不是看他的成績，而是看他的努力。"],["A team is not judged by its size, but by its spirit.","評斷一支隊伍，不是看它的規模，而是看它的精神。"]],"u":[["人","說了什麼","做了什麼"],["學生","成績","努力"],["隊伍","規模","精神"]]},{"e":"No one can humiliate or disturb us unless we let him.","z":"沒有任何人能侮辱我們、困擾我們，除非我們自己允許。","m":"{F|No one can|No one can V unless + S V} humiliate or disturb us {F|unless|unless + S + V (除非)} we {V|let him|let + sb. + V}.","x":[["No one can stop us unless we let him.","除非我們自己允許，否則沒有人能阻止我們。"],["No one can fool you unless you let him.","除非你自己允許，否則沒有人能愚弄你。"]],"u":[["侮辱","困擾我們"],["阻止"],["愚弄"]]},{"e":"No one can make you feel inferior without your consent.","z":"沒有你的同意，沒有人能讓你自卑。","m":"{F|No one can|No one can V ...} {C|make you feel inferior|make + sb. + feel + adj} {F|without|without + N} your consent.","x":[["No one can make you feel inferior without your help.","沒有你的配合，沒有人能讓你覺得自己不如人。"],["No one can make you feel inferior without your agreement.","沒有你的同意，沒有人能讓你覺得自己不如人。"]],"u":[["同意"],["配合"],["同意"]]},{"e":"To reach your goals, work hard, participate, practice, and do the best you can.","z":"想達成目標，就要努力、參與、練習，並盡你所能做到最好。","m":"To {C|reach your goals|reach one's goals}, {C|work hard|work hard}, participate, practice, and {P|do the best you can|do one's best}.","x":[["To reach your goals, work hard, listen, learn, and do the best you can.","想達成目標，就要努力、傾聽、學習，並盡你所能做到最好。"],["To reach your goals, work hard, ask questions, and do the best you can.","想達成目標，就要努力、發問，並盡你所能做到最好。"]],"u":[["參與","練習"],["傾聽","學習"],["發問"]]},{"e":"Genius is the ability to put into effect what is in your mind.","z":"天才就是將心中所想付諸行動的能力。","m":"Genius is {C|the ability to|ability to + V} {V|put into effect|put into effect (實行)} what is in your mind.","x":[["A good team has the ability to put into effect what its members decide.","好的團隊有能力把成員所做的決定付諸實行。"],["A good student has the ability to put into effect what a teacher explains.","好學生有能力把老師講解的內容付諸實行。"]],"u":[["天才","心中"],["好的團隊","成員所做的決定"],["好學生","老師講解"]]},{"e":"Life doesn't require that we be the best, only that we try our best.","z":"人生並不要求我們成為最好的，只要求我們盡力而為。","m":"Life doesn't {V|require that we be|require that + S + (should) V} the best, {F|only that|not A, only B} we {P|try our best|try one's best}.","x":[["School doesn't require that we be perfect, only that we try our best.","學校並不要求我們完美，只要求我們盡力而為。"],["My mother doesn't require that we be number one, only that we try our best.","媽媽並不要求我們拿第一名，只要求我們盡力而為。"]],"u":[["人生並不","最好的"],["學校","完美"],["媽媽","第一名"]]},{"e":"The most important single ingredient in the formula of success is knowing how to get along with people.","z":"成功公式中最重要的單一要素，就是懂得如何與人相處。","m":"{F|The most important single ingredient in the formula of success is|The most + adj + N + is + V-ing} {C|knowing how to|know how to + V} {V|get along with|get along with + sb.} people.","x":[["The most important single ingredient in the formula of success is knowing how to get along with classmates.","成功公式中最重要的單一要素，就是懂得如何與同學相處。"],["The most important single ingredient in the formula of success is knowing how to get along with neighbors.","成功公式中最重要的單一要素，就是懂得如何與鄰居相處。"]],"u":[["人"],["同學"],["鄰居"]]},{"e":"Success is not measured by the position you reach in life; it's measured by the obstacles you overcome.","z":"成功不是用你一生取得的地位來衡量的，而是看你克服了多少障礙。","m":"Success {F|is not measured by|not measured by A; measured by B} the position you reach in life; it's {F|measured by|not measured by A; measured by B} the {C|obstacles you overcome|overcome obstacles}.","x":[["Success is not measured by the prize you win; it's measured by the obstacles you overcome.","成功不是用你贏得的獎項來衡量，而是看你克服了多少障礙。"],["Power is not measured by the weight you lift; it's measured by the obstacles you overcome.","力量不是用你舉起的重量來衡量，而是看你克服了多少障礙。"]],"u":[["成功","地位","取得","一生"],["獎項","贏得"],["力量","重量","舉起"]]},{"e":"It is in your moments of decision that your destiny is shaped.","z":"你的命運，取決於你做決定的那一刻。","m":"{F|It is in your moments of decision that|It is + 強調部分 + that (強調句)} your destiny is shaped.","x":[["It is in your moments of decision that your character is shown.","你的品格，展現在你做決定的那一刻。"],["It is in your moments of decision that your habits are formed.","你的習慣，是在你做決定的那一刻養成的。"]],"u":[["命運","取決於"],["品格","展現"],["習慣","養成"]]},{"e":"The surest way not to fail is to determine to succeed.","z":"避免失敗最可靠的方法，就是下定決心成功。","m":"{F|The surest way not to fail is to|The way to V is to V} {V|determine to|determine to + V} succeed.","x":[["The surest way not to fail is to determine to practice every day.","不失敗最可靠的方法，就是下定決心每天練習。"],["The surest way not to fail is to determine to finish your homework.","不失敗最可靠的方法，就是下定決心把功課寫完。"]],"u":[["成功"],["每天練習"],["把功課寫完"]]},{"e":"What would life be if we had no courage to attempt anything?","z":"如果我們對任何事情都沒有勇氣嘗試，人生還有什麼意義？","m":"{F|What would life be if we had|What would S be if S had ... (與現在事實相反的假設)} no {C|courage to|courage to + V} attempt anything?","x":[["What would life be if we had no courage to speak?","如果我們沒有開口說話的勇氣，人生會是什麼樣子？"],["What would life be if we had no courage to try new food?","如果我們沒有嘗試新食物的勇氣，人生會是什麼樣子？"]],"u":[["任何事情","嘗試"],["開口說話"],["嘗試新食物"]]},{"e":"The world belongs to the energetic.","z":"世界屬於充滿活力的人。","m":"The world {V|belongs to|belong to} {C|the energetic|the + adj (…的人)}.","x":[["The morning belongs to the energetic.","早晨屬於充滿活力的人。"],["The stage belongs to the energetic.","舞台屬於充滿活力的人。"]],"u":[["世界"],["早晨"],["舞台"]]},{"e":"Early to bed and early to rise keeps a man healthy, wealthy and wise.","z":"早睡早起，使人健康、富足又有智慧。","m":"{P|Early to bed and early to rise keeps a man healthy, wealthy and wise|諺語}.","x":[["My grandfather goes to bed at nine. He says, \"Early to bed and early to rise keeps a man healthy, wealthy and wise.\"","我爺爺九點就上床睡覺。他說：「早睡早起，使人健康、富足又有智慧。」"],["Sleep early before the exam. Remember: Early to bed and early to rise keeps a man healthy, wealthy and wise.","考試前要早點睡。記住：早睡早起，使人健康、富足又有智慧。"]],"u":[[],["爺爺","九點","說"],["早點睡","考試前","記住"]]},{"e":"The human will can be strengthened like a muscle!","z":"人的意志可以像肌肉一樣被鍛鍊強化。","m":"The human will {F|can be strengthened|can be + p.p. (被動)} {F|like a muscle|like + N (比喻)}!","x":[["Memory can be strengthened like a muscle.","記憶力可以像肌肉一樣被鍛鍊強化。"],["Your English can be strengthened like a muscle.","你的英文可以像肌肉一樣被鍛鍊強化。"]],"u":[["人"],["記憶力"],["英文"]]},{"e":"Success grows out of the struggle to overcome difficulties.","z":"成功來自於克服困難的奮鬥。","m":"Success {V|grows out of|grow out of (源自)} the {C|struggle to|struggle to + V} {C|overcome difficulties|overcome difficulties}.","x":[["Courage grows out of the struggle to overcome difficulties.","勇氣來自克服困難的奮鬥。"],["Friendship grows out of the struggle to overcome difficulties.","友誼來自克服困難的奮鬥。"]],"u":[["成功"],["勇氣"],["友誼"]]},{"e":"Each day, take at least one step toward your goal. The step doesn't have to be big, moving forward even a small amount is progress.","z":"每天至少朝目標邁進一步。這一步不一定要很大，就算只前進一點點，也是進步。","m":"Each day, {C|take at least one step toward|take a step toward} your goal. The step {F|doesn't have to|don't have to + V (不必)} be big, {C|moving forward|move forward} even a small amount is progress.","x":[["Every week, take at least one step toward your dream. The plan doesn't have to be perfect, moving forward even a little is progress.","每週至少朝你的夢想邁進一步。計畫不必完美，只要往前走一點點，就是進步。"],["Each day, take at least one step toward better health. The exercise doesn't have to be long, moving forward even a little is progress.","每天至少朝更健康的目標邁進一步。運動不必很久，只要往前走一點點，就是進步。"]],"u":[["每天","目標","這一步","很大","就算","一點點"],["每週","完美","一點點"],["更健康","運動","一點點"]]},{"e":"Remind yourself to laugh and smile. You can always make room for happiness.","z":"提醒自己要開懷大笑、微笑。你總能為快樂騰出空間。","m":"{V|Remind yourself to|remind sb. to + V} laugh and smile. You can always {C|make room for|make room for + N} happiness.","x":[["Remind yourself to rest. You can always make room for friends.","提醒自己要休息。你總是能為朋友留出空間。"],["Remind yourself to read. You can always make room for music.","提醒自己要閱讀。你總是能為音樂留出空間。"]],"u":[["開懷大笑","微笑","總能","快樂"],["休息","朋友"],["閱讀","音樂"]]},{"e":"Everyone is important. Anyone can change the world. No one should underestimate his power!","z":"人人都很重要。任何人都能改變世界。沒有人應該低估自己的力量！","m":"Everyone is important. Anyone can {C|change the world|change the world}. {F|No one should|No one should + V} underestimate his power!","x":[["Even a child can change the world. No one should laugh at his dream.","就連小孩也能改變世界。沒有人應該嘲笑他的夢想。"],["A small kind act can change the world. No one should ignore it.","一個小小的善行就能改變世界。沒有人應該忽視它。"]],"u":[["人人","重要","任何人","低估","力量"],["小孩","嘲笑","夢想"],["小小的善行","忽視"]]},{"e":"Only a fool criticizes what he does not understand.","z":"只有傻瓜才會批評自己不懂的事。","m":"Only a fool criticizes {F|what he does not understand|what + S + V (名詞子句)}.","x":[["Only a fool laughs at what he does not understand.","只有傻瓜才會嘲笑自己不懂的事。"],["Only a fool fears what he does not understand.","只有傻瓜才會害怕自己不懂的事。"]],"u":[["只有","傻瓜才會批評"],["嘲笑"],["害怕"]]},{"e":"You don't need an invitation to help others. Help before you are asked.","z":"幫助別人是不需要邀請的。在別人開口之前就伸出援助之手吧！","m":"{F|You don't need an invitation to|need an invitation to + V} help others. Help {F|before|before + S + V} you are asked.","x":[["You don't need an invitation to share your lunch. Offer before you are asked.","分享午餐不需要邀請。在別人開口之前就主動提供吧。"],["You don't need an invitation to clean the classroom. Start before you are asked.","打掃教室不需要邀請。在別人開口之前就動手吧。"]],"u":[["幫助別人","伸出援助之手","開口"],["分享","午餐","主動提供"],["打掃","教室","動手"]]},{"e":"Push yourself to do more than others believe you can do. Then, encourage others to push themselves just as hard.","z":"督促自己做到比別人以為你能做的更多。接著，鼓勵別人也同樣努力督促自己。","m":"{V|Push yourself to|push oneself to + V} do more than others believe you can do. Then, {V|encourage others to|encourage sb. to + V} push themselves {F|just as hard|as + adv + as}.","x":[["Push yourself to read more than your teacher expects. Then, encourage others to read just as hard.","逼自己讀得比老師期待的更多。接著，鼓勵別人也同樣用功閱讀。"],["Push yourself to practice more than your teacher expects. Then, encourage others to practice just as hard.","逼自己練習得比老師期待的更多。接著，鼓勵別人也同樣努力練習。"]],"u":[["更多","別人以為","努力督促自己"],["讀","老師期待","閱讀"],["練習","老師期待","努力練習"]]},{"e":"The future belongs to those who believe in the beauty of their dreams.","z":"未來屬於那些相信夢想之美的人。","m":"The future {V|belongs to|belong to} {F|those who|those who + V (…的人)} {V|believe in|believe in + N} the beauty of their dreams.","x":[["The prize belongs to those who believe in working together.","獎項屬於相信大家一起努力的人。"],["The future belongs to those who believe in the power of reading.","未來屬於相信閱讀力量的人。"]],"u":[["未來","夢想之美"],["獎項","大家一起努力"],["閱讀力量"]]},{"e":"Harsh advice is the most instructive.","z":"忠言逆耳利於行。","m":"Harsh advice is {F|the most instructive|the most + adj}.","x":[["Experience is the most instructive teacher.","經驗是最具啟發性的老師。"],["Failure is the most instructive teacher.","失敗是最具啟發性的老師。"]],"u":[["忠言逆耳"],["經驗","老師"],["失敗","老師"]]},{"e":"Don't wait for the world to change. Change it yourself.","z":"不要等待世界改變。去改變世界吧！","m":"Don't {V|wait for the world to change|wait for + sb. + to V}. Change it yourself.","x":[["Don't wait for the world to change. Start with your own class.","別等著世界改變。從你自己的班級開始吧。"],["Don't wait for the world to change. Start with your own room.","別等著世界改變。從你自己的房間開始吧。"]],"u":[["不要","改變世界"],["開始","自己的班級"],["開始","自己的房間"]]},{"e":"The only true failure is the failure to try.","z":"唯一真正的失敗是沒有去嘗試。","m":"{F|The only|The only + N + is ...} true failure is the {C|failure to|failure to + V} try.","x":[["The only real mistake is the failure to ask.","唯一真正的錯誤，就是不開口提問。"],["The only true weakness is the failure to listen.","唯一真正的弱點，就是不願傾聽。"]],"u":[["真正的失敗","嘗試"],["真正的錯誤","提問"],["弱點","傾聽"]]},{"e":"Nothing great was ever achieved without enthusiasm.","z":"沒有熱情，就成就不了偉大的事。","m":"{F|Nothing great was ever achieved without|Nothing + p.p. + without + N (沒有…就沒有…)} enthusiasm.","x":[["Nothing great was ever achieved without help.","沒有別人的幫助，就成就不了任何偉大的事。"],["Nothing great was ever achieved without practice.","沒有練習，就成就不了任何偉大的事。"]],"u":[["熱情"],["別人的幫助"],["練習"]]},{"e":"There is no challenge more challenging than improving yourself.","z":"沒有什麼挑戰比提升自己更具挑戰性。","m":"{F|There is no challenge more challenging than|There is no + N + 比較級 + than ...} improving yourself.","x":[["There is no challenge more challenging than speaking in public.","沒有什麼挑戰比公開演說更具挑戰性。"],["There is no challenge more challenging than waking up early.","沒有什麼挑戰比早起更具挑戰性。"]],"u":[["提升自己"],["公開演說"],["早起"]]},{"e":"Confidence is contagious. So is lack of confidence.","z":"自信會傳染，缺乏自信也一樣。","m":"Confidence is contagious. {F|So is|So + be/助動詞 + S (…也一樣)} {C|lack of|lack of + N} confidence.","x":[["Kindness is contagious. So is lack of kindness.","善意會傳染，缺乏善意也一樣。"],["Excitement is contagious. So is lack of interest.","興奮會傳染，缺乏興趣也一樣。"]],"u":[["自信","傳染","缺乏自信"],["善意","缺乏善意"],["興奮","缺乏興趣"]]},{"e":"Confidence is half of victory.","z":"自信就是成功的一半。","m":"Confidence {F|is half of|X is half of Y} victory.","x":[["Planning is half of success.","規劃好就成功了一半。"],["Listening is half of learning.","傾聽是學習的一半。"]],"u":[["自信","成功"],["規劃","成功"],["傾聽","學習"]]},{"e":"Attitude is just as important as ability.","z":"態度和能力一樣重要。","m":"Attitude is {F|just as important as|as + adj + as} ability.","x":[["Sleep is just as important as study.","睡眠和讀書一樣重要。"],["Health is just as important as grades.","健康和成績一樣重要。"]],"u":[["態度","能力"],["睡眠","讀書"],["健康","成績"]]},{"e":"You're unique with special gifts; use them.","z":"你是獨一無二的，擁有獨特的才能。好好發揮吧！","m":"You're unique {C|with special gifts|with + N (具有…)}; use them.","x":[["Every child is born with special gifts; teachers should help them grow.","每個孩子天生都有特別的天賦；老師應該幫助他們成長。"],["My sister is born with special gifts; she uses them well.","我姊姊天生就有特別的天賦，而且她把天賦運用得很好。"]],"u":[["你是獨一無二","好好發揮"],["每個孩子","天生","老師應該幫助"],["姊姊","天生","運用"]]},{"e":"We're all capable if we have faith and passion.","z":"只要我們有信念、有熱情，我們就都有能力。","m":"We're all capable {F|if we have|if + S + V (條件句)} faith and passion.","x":[["We can all learn if we have time and courage.","只要有時間和勇氣，我們都能學會。"],["We're all strong if we have friends and hope.","只要有朋友和希望，我們都很堅強。"]],"u":[["信念","熱情","能力"],["時間","勇氣","學會"],["朋友","希望","堅強"]]},{"e":"Diligence is the mother of good luck.","z":"勤奮是好運之母。","m":"Diligence {F|is the mother of|X is the mother of Y} {C|good luck|good luck}.","x":[["Hard work is the mother of good luck.","努力是好運之母。"],["Practice is the mother of good luck.","練習是好運之母。"]],"u":[["勤奮"],["努力"],["練習"]]},{"e":"If you are doing your best, you will not have to worry about failure.","z":"如果你盡力而為，你就不必擔憂失敗。","m":"{F|If you are doing your best, you will|If + S + V, S will V (條件句)} {C|not have to|not have to + V} {V|worry about|worry about + N} failure.","x":[["If you are doing your best, you will not have to worry about grades.","如果你已經盡了全力，就不必擔心成績。"],["If you are doing your best, you will not have to worry about the result.","如果你已經盡了全力，就不必擔心結果。"]],"u":[["失敗"],["成績"],["結果"]]},{"e":"Those who turn back never reach the summit.","z":"中途折返的人，永遠到不了山頂。","m":"{F|Those who|Those who + V (…的人)} {V|turn back|turn back} never {C|reach the summit|reach the summit}.","x":[["Those who turn back never reach the summit of Yushan.","中途折返的人，永遠到不了玉山的山頂。"],["Those who turn back never reach the summit, even of a small hill.","中途折返的人，永遠到不了山頂，就連小山丘也一樣。"]],"u":[["永遠"],["玉山"],["就連","小山丘"]]},{"e":"A winner never stops trying.","z":"成功者永不停止嘗試。","m":"A winner {V|never stops trying|stop + V-ing (停止做某事)}.","x":[["A good student never stops trying.","好學生永不停止嘗試。"],["A real artist never stops trying.","真正的藝術家永不停止嘗試。"]],"u":[["成功者"],["好學生"],["真正的藝術家"]]},{"e":"The first and best victory is to conquer yourself.","z":"第一個，也是最好的勝利，就是戰勝自己。","m":"{F|The first and best victory is to|The + N + is to V} {C|conquer yourself|conquer oneself}.","x":[["The first and best victory is to conquer yourself, not your classmates.","最重要的勝利是戰勝自己，而不是戰勝同學。"],["The first and best victory is to conquer yourself, not the other team.","最重要的勝利是戰勝自己，而不是戰勝對方的隊伍。"]],"u":[[],["同學"],["對方的隊伍"]]},{"e":"Take chances, make mistakes. That's how you grow.","z":"去冒險，去犯錯！你就是這樣成長的！","m":"{V|Take chances|take chances}, {V|make mistakes|make mistakes}. {F|That's how|That's how + S + V (這就是…的方式)} you grow.","x":[["Take chances, make mistakes. That's how you learn.","去冒險，去犯錯。你就是這樣學習的。"],["Take chances, make mistakes. That's how you become brave.","去冒險，去犯錯。你就是這樣變勇敢的。"]],"u":[["成長"],["學習"],["變勇敢"]]},{"e":"True strength flows from a healthy body and mind working in harmony.","z":"真正的力量，來自身體與心智的健康，並且和諧運作。","m":"True strength {V|flows from|flow from} a healthy body and mind {V|working in harmony|work in harmony}.","x":[["True beauty flows from a kind heart and a calm mind working in harmony.","真正的美，來自善良的心與平靜的思緒和諧共處。"],["True friendship flows from trust and respect working in harmony.","真正的友誼，來自信任與尊重的和諧配合。"]],"u":[["真正的力量","身體","心智","健康"],["美","善良的心","平靜"],["友誼","信任","尊重"]]},{"e":"Failure is the sauce that gives success its flavor.","z":"失敗是成功的調味品。","m":"Failure is {F|the sauce that|N + that + V (關係代名詞)} {V|gives success its flavor|give + sth. + N}.","x":[["Hard work is the sauce that gives success its flavor.","努力是替成功增添風味的醬汁。"],["Practice is the sauce that gives success its flavor.","練習是替成功增添風味的醬汁。"]],"u":[["失敗"],["努力"],["練習"]]},{"e":"Failure teaches you more than success.","z":"從失敗中學到的，比從成功中學到的更多。","m":"Failure {V|teaches you|teach + sb. + N} {F|more than|more + N + than} success.","x":[["Travel teaches you more than a textbook.","旅行教給你的，比課本更多。"],["Cooking teaches you more than a book.","烹飪教給你的，比一本書更多。"]],"u":[["失敗","成功"],["旅行","課本"],["烹飪","一本書"]]},{"e":"Make full use of whatever happens to you. There is something to learn from every experience.","z":"充分利用發生在你身上的任何事情。任何的經歷都有值得學習的地方。","m":"{V|Make full use of|make full use of + N} {F|whatever happens to you|whatever + V (複合關係代名詞)}. {F|There is something to learn from|There is something to V from + N} every experience.","x":[["Make full use of whatever happens to you. There is something to learn from every mistake.","充分利用發生在你身上的一切。每一次錯誤都有值得學習的地方。"],["Make full use of whatever happens to you. There is something to learn from every game.","充分利用發生在你身上的一切。每一場比賽都有值得學習的地方。"]],"u":[["任何的經歷"],["錯誤"],["比賽"]]},{"e":"Goodness is the only investment that never fails.","z":"善良是唯一不會失敗的投資。","m":"Goodness is {F|the only investment that|the only + N + that + V} never fails.","x":[["Reading is the only investment that never gets old.","閱讀是唯一永遠不會過時的投資。"],["Friendship is the only investment that never goes down.","友誼是唯一不會下跌的投資。"]],"u":[["善良","不會失敗"],["閱讀","過時"],["友誼","下跌"]]},{"e":"Life is a struggle that must be accepted. Accepting the struggle happily or miserably is up to you to decide.","z":"人生是一場必須接受的奮鬥。要開心地接受，還是痛苦地接受，由你自己決定。","m":"Life is a struggle that must be accepted. Accepting the struggle happily or miserably {F|is up to you to|be up to + sb. + to V} decide.","x":[["Choosing a hobby is up to you to decide.","選擇什麼嗜好，由你自己決定。"],["Picking a book is up to you to choose.","挑哪一本書，由你自己決定。"]],"u":[["人生","奮鬥","必須","接受","開心地接受","痛苦地接受","決定"],["選擇","嗜好"],["挑哪一本書"]]},{"e":"If you cannot be an excellent loser, you'll never succeed.","z":"如果你不能成為一個輸得起的人，你就永遠不會成功！","m":"{F|If you cannot|If + S can't V, S will never V} be an excellent loser, {F|you'll never|If + S can't V, S will never V} succeed.","x":[["If you cannot be a good listener, you'll never be a good leader.","如果你不能成為一個好的傾聽者，你就永遠無法成為好的領導者。"],["If you cannot be kind, you'll never have friends.","如果你不能待人親切，你就永遠交不到朋友。"]],"u":[["輸得起的人","成功"],["傾聽者","領導者"],["待人親切","朋友"]]},{"e":"No matter how hard you try or how much time you spend worrying, some things just cannot be changed. Accept them and move on.","z":"不管你多麼努力，不管你花多少時間擔憂，總有些事是無法改變的。接受它們，繼續前進吧！","m":"{F|No matter how hard you try|No matter how + adj/adv + S + V} or how much time you {V|spend worrying|spend time + V-ing}, some things just cannot be changed. Accept them and {P|move on|move on (繼續前進)}.","x":[["No matter how hard you try or how much time you spend worrying, the rain will not stop. Accept it and move on.","不管你多努力，也不管你花多少時間擔心，雨都不會停。接受它，然後繼續往前走吧。"],["No matter how hard you try or how much time you spend worrying, a past exam cannot be changed. Accept it and move on.","不管你多努力，也不管你花多少時間擔心，已經考完的考試也無法改變。接受它，然後繼續往前走吧。"]],"u":[["多少時間","無法改變","接受它們"],["雨","停"],["考完的考試"]]},{"e":"Continuous effort, not strength or intelligence, is the key to unlocking our potential.","z":"激發潛能的關鍵，不是力量，也不是智慧，而是持續不斷的努力。","m":"Continuous effort, not strength or intelligence, {F|is the key to|X is the key to + N/V-ing} {C|unlocking our potential|unlock one's potential}.","x":[["Practice, not luck, is the key to unlocking our potential.","激發我們潛能的關鍵不是運氣，而是練習。"],["Reading, not money, is the key to unlocking our potential.","激發我們潛能的關鍵不是金錢，而是閱讀。"]],"u":[["持續不斷的努力","力量","智慧"],["運氣","練習"],["金錢","閱讀"]]}];
+var TYPE = { F: '句型框架', C: '搭配詞', V: '動詞片語', P: '固定表達／諺語' };
+var GAPS = [0, 1, 3, 7];
+var SPEEDS = [0.7, 0.8, 0.9, 1, 1.1];
+var $ = function (id) { return document.getElementById(id); };
+var PAT = /\{([FCVP])\|([^|{}]*)\|([^|{}]*)\}/g;
+var STOP = {};
+('a an the of to in on at is are was were be been it its and or but for with by as from your my our his her their that this these those not no you we they i he she do does did will can may has have had if so than then there what who whom how why when where all any one').split(' ').forEach(function (w) { STOP[w] = 1; });
+
+function parse(m) {
+  var segs = [], pos = 0, r;
+  PAT.lastIndex = 0;
+  while ((r = PAT.exec(m))) {
+    if (r.index > pos) segs.push({ t: null, x: m.slice(pos, r.index) });
+    segs.push({ t: r[1], x: r[2], l: r[3] || r[2] });
+    pos = PAT.lastIndex;
+  }
+  if (pos < m.length) segs.push({ t: null, x: m.slice(pos) });
+  return segs;
+}
+D.forEach(function (d) {
+  d.s = parse(d.m);
+  d.chunks = d.s.filter(function (s) { return s.t; });
+  d.isP = d.s.length === 1 && d.s[0].t === 'P';
+  d.ow = {};
+  (d.e.toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) || []).forEach(function (w) { d.ow[w] = 1; d.ow['~' + w.slice(0, 4)] = 1; });
+});
+function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+/* ---------- 狀態與儲存 ---------- */
+var S = { idx: 0, stage: 1, playing: false, token: 0, gender: 'b', turn: 'f', rate: 0.9, gap: 1, zh: true, ck: 'ul', review: false, tag: '', timer: 0, chain: [] };
+var KEY = 'quotes-chunk-v2', PKEY = 'quotes-chunk-prog-v1';
+var P = {};
+try {
+  var saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  ['gender', 'rate', 'gap', 'zh', 'ck', 'idx'].forEach(function (k) { if (saved[k] !== undefined) S[k] = saved[k]; });
+  P = JSON.parse(localStorage.getItem(PKEY) || '{}') || {};
+} catch (e) {}
+function persist() {
+  try { localStorage.setItem(KEY, JSON.stringify({ gender: S.gender, rate: S.rate, gap: S.gap, zh: S.zh, ck: S.ck, idx: S.idx })); } catch (e) {}
+}
+function persistP() { try { localStorage.setItem(PKEY, JSON.stringify(P)); } catch (e) {} }
+if (['f', 'm', 'b'].indexOf(S.gender) < 0) S.gender = 'f';
+if ([0.5, 1, 2, 3].indexOf(S.gap) < 0) S.gap = 1;
+if (['ul', 'color', 'off'].indexOf(S.ck) < 0) S.ck = 'ul';
+if (SPEEDS.indexOf(S.rate) < 0) S.rate = 0.9;
+S.idx = Math.min(D.length - 1, Math.max(0, parseInt(S.idx, 10) || 0));
+var noteEl = $('note'), noteTimer = 0;
+function note(msg, ms) {
+  noteEl.textContent = msg || ''; noteEl.classList.toggle('show', !!msg);
+  clearTimeout(noteTimer); if (msg && ms) noteTimer = setTimeout(function () { note(''); }, ms);
+}
+
+/* ---------- 學習進度 ---------- */
+function due(i) {
+  var p = P[i + 1]; if (!p) return false;
+  return p.b === 0 || (Date.now() - p.t) >= GAPS[Math.min(3, p.b)] * 86400000;
+}
+function dueList() { var r = []; for (var i = 0; i < D.length; i++) if (due(i)) r.push(i); return r; }
+function mark(i, ok) {
+  var p = P[i + 1] || { b: 0, t: 0 };
+  p.b = ok ? Math.min(3, p.b + 1) : 0; p.t = Date.now(); P[i + 1] = p;
+  persistP(); paintSum(); paintNav();
+}
+function paintSum() {
+  var learned = 0, known = 0;
+  for (var i = 0; i < D.length; i++) { var p = P[i + 1]; if (!p) continue; learned++; if (p.b >= 1) known++; }
+  $('sum').innerHTML = '已練習 <b>' + learned + '</b> 句・已會 <b>' + known + '</b> 句';
+  $('review').textContent = '今日複習（' + dueList().length + '）';
+}
+
+/* ---------- 句子元件 ---------- */
+function chunkSpan(seg) {
+  var sp = document.createElement('span');
+  sp.className = 'ck t' + seg.t; sp.textContent = seg.x;
+  sp.addEventListener('click', function (e) { if (S.ck === 'off' || sp.closest('.hid')) return; e.stopPropagation(); showTip(seg); });
+  return sp;
+}
+function sentenceNodes(d) {
+  var f = document.createDocumentFragment();
+  d.s.forEach(function (s) { f.appendChild(s.t ? chunkSpan(s) : document.createTextNode(s.x)); });
+  return f;
+}
+/* 例句拆成：語塊(ck)、一般文字(txt)、被換掉的字(slot) */
+function exampleSegs(text, d) {
+  var spans = [];
+  d.chunks.slice().sort(function (a, b) { return b.x.length - a.x.length; }).forEach(function (c) {
+    var re = new RegExp('(^|[^A-Za-z\'])(' + esc(c.x) + ')(?![A-Za-z\'])', 'gi'), m;
+    while ((m = re.exec(text))) {
+      var st = m.index + m[1].length, en = st + m[2].length;
+      if (spans.every(function (q) { return en <= q.s || st >= q.e; })) spans.push({ s: st, e: en, c: c });
+      re.lastIndex = st + 1;
+    }
+  });
+  spans.sort(function (a, b) { return a.s - b.s; });
+  var out = [], pos = 0;
+  spans.forEach(function (q) {
+    if (q.s > pos) out.push({ k: 'gap', x: text.slice(pos, q.s) });
+    out.push({ k: 'ck', x: text.slice(q.s, q.e), t: q.c.t, l: q.c.l });
+    pos = q.e;
+  });
+  if (pos < text.length) out.push({ k: 'gap', x: text.slice(pos) });
+  return out;
+}
+function exParts(text, d) {
+  var parts = [];
+  exampleSegs(text, d).forEach(function (s) {
+    if (s.k === 'ck') { parts.push(s); return; }
+    var re = /[A-Za-z]+(?:'[A-Za-z]+)?/g, pos = 0, m, cur = null;
+    while ((m = re.exec(s.x))) {
+      var w = m[0].toLowerCase(), sw = !d.ow[w] && !d.ow['~' + w.slice(0, 4)] && !STOP[w] && !d.isP;
+      var g = s.x.slice(pos, m.index);
+      if (sw) {
+        if (cur && /^\s+$/.test(g)) cur.x += g + m[0];
+        else { if (g) parts.push({ k: 'txt', x: g }); cur = { k: 'slot', x: m[0] }; parts.push(cur); }
+      } else { cur = null; if (g + m[0]) parts.push({ k: 'txt', x: g + m[0] }); }
+      pos = re.lastIndex;
+    }
+    if (pos < s.x.length) parts.push({ k: 'txt', x: s.x.slice(pos) });
+  });
+  var sl = parts.filter(function (p) { return p.k === 'slot'; });
+  if (sl.length > 3) {
+    var keep = sl.slice().sort(function (a, b) { return b.x.length - a.x.length; }).slice(0, 3);
+    parts.forEach(function (p) { if (p.k === 'slot' && keep.indexOf(p) < 0) p.k = 'txt'; });
+  }
+  return parts;
+}
+/* 原句拆成：語塊(ck)、一般文字(txt)、可被換掉的字(slot) */
+function origParts(d) {
+  var parts = [];
+  d.s.forEach(function (s) {
+    if (s.t) { parts.push({ k: 'ck', x: s.x, t: s.t, l: s.l }); return; }
+    var re = /[A-Za-z]+(?:'[A-Za-z]+)?/g, pos = 0, m, cur = null;
+    while ((m = re.exec(s.x))) {
+      var g = s.x.slice(pos, m.index);
+      if (!d.isP && !STOP[m[0].toLowerCase()]) {
+        if (cur && /^\s+$/.test(g)) cur.x += g + m[0];
+        else { if (g) parts.push({ k: 'txt', x: g }); cur = { k: 'slot', x: m[0] }; parts.push(cur); }
+      } else { cur = null; if (g + m[0]) parts.push({ k: 'txt', x: g + m[0] }); }
+      pos = re.lastIndex;
+    }
+    if (pos < s.x.length) parts.push({ k: 'txt', x: s.x.slice(pos) });
+  });
+  return parts;
+}
+var tipTimer = 0;
+function showTip(seg) {
+  var el = $('tipin'); el.innerHTML = '';
+  var a = document.createElement('div'); a.className = 'l'; a.textContent = TYPE[seg.t];
+  var b = document.createElement('div'); b.innerHTML = '<b></b>';
+  b.firstChild.textContent = seg.t === 'P' ? seg.x : seg.l;
+  el.appendChild(a); el.appendChild(b);
+  if (seg.t === 'P') { var c = document.createElement('div'); c.className = 'l'; c.textContent = '整句固定說法，整句背起來，不要換字。'; el.appendChild(c); }
+  $('tipbar').classList.add('show');
+  clearTimeout(tipTimer); tipTimer = setTimeout(hideTip, 7000);
+}
+function hideTip() { $('tipbar').classList.remove('show'); }
+document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('.ck')) hideTip(); });
+
+function el(tag, cls, txt) { var d = document.createElement(tag); if (cls) d.className = cls; if (txt !== undefined) d.textContent = txt; return d; }
+function btn(cls, txt, fn) { var b = el('button', cls, txt); b.type = 'button'; b.addEventListener('click', fn); return b; }
+function shuffled(a) {
+  var b = a.slice(), t = 0;
+  do {
+    for (var i = b.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = b[i]; b[i] = b[j]; b[j] = x; }
+    t++;
+  } while (t < 8 && b.every(function (v, i) { return v === a[i]; }) && b.length > 1);
+  return b;
+}
+
+/* ---------- 單句頁 ---------- */
+var stageEl = $('stage'), blocks = [];
+function blank(txt, cls, ty) {
+  var b = el('span', 'bl ' + (cls || '') + (ty ? ' t' + ty : ''), txt);
+  b.setAttribute('role', 'button'); b.tabIndex = 0; b.setAttribute('aria-label', '蓋住的字，點一下看答案');
+  return b;
+}
+/* 中文句：把對應英文底線字的片段畫上底線 */
+function zhNodes(text, frags) {
+  var f = document.createDocumentFragment(), used = [];
+  (frags || []).forEach(function (w) {
+    var s = 0, i;
+    while ((i = text.indexOf(w, s)) > -1) {
+      if (used.every(function (u) { return i + w.length <= u[0] || i >= u[1]; })) { used.push([i, i + w.length]); return; }
+      s = i + 1;
+    }
+  });
+  used.sort(function (a, b) { return a[0] - b[0]; });
+  var pos = 0;
+  used.forEach(function (u) {
+    if (u[0] > pos) f.appendChild(document.createTextNode(text.slice(pos, u[0])));
+    var sp = document.createElement('span'); sp.className = 'zu'; sp.textContent = text.slice(u[0], u[1]); f.appendChild(sp); pos = u[1];
+  });
+  if (pos < text.length) f.appendChild(document.createTextNode(text.slice(pos)));
+  return f;
+}
+function lineBlock(k, d, bodyFn) {
+  var blk = el('section', 'blk');
+  var h = el('div', 'bh');
+  h.appendChild(el('span', 'lb', k === 0 ? '原句' : (d.isP ? '用法例句 ' : '例句 ') + k));
+  var sp = btn('sp', '', function () { stopChain(); playClip(S.idx, k === 0 ? '' : k === 1 ? 'a' : 'b'); });
+  sp.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>聽'; sp.setAttribute('aria-label', '朗讀' + (k === 0 ? '原句' : '例句 ' + k));
+  h.appendChild(sp); blk.appendChild(h);
+  var en = el('div', 'en'); bodyFn(en); blk.appendChild(en);
+  var zhEl = el('div', 'zh');
+  zhEl.appendChild(zhNodes(k === 0 ? d.z : d.x[k - 1][1], d.u && d.u[k]));
+  blk.appendChild(zhEl);
+  blocks[k] = blk; return blk;
+}
+function render() {
+  var i = S.idx, d = D[i];
+  blocks = [];
+  stageEl.innerHTML = ''; stageEl.className = 'wrapst st' + S.stage;
+  stageEl.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+  var box = stageEl;
+  var ctl = null, tray = null;
+
+  if (S.stage === 1 || S.stage === 4) {
+    box.appendChild(lineBlock(0, d, function (e) {
+      origParts(d).forEach(function (p) {
+        if (p.k === 'ck') e.appendChild(chunkSpan({ t: p.t, x: p.x, l: p.l }));
+        else if (p.k === 'slot') e.appendChild(el('span', 'sw', p.x));
+        else e.appendChild(document.createTextNode(p.x));
+      });
+    }));
+    [1, 2].forEach(function (k) {
+      box.appendChild(lineBlock(k, d, function (e) {
+        exParts(d.x[k - 1][0], d).forEach(function (p) {
+          if (p.k === 'ck') e.appendChild(chunkSpan({ t: p.t, x: p.x, l: p.l }));
+          else if (p.k === 'slot') { var s = el('span', 'sw', p.x); e.appendChild(s); }
+          else e.appendChild(document.createTextNode(p.x));
+        });
+      }));
+    });
+    if (S.stage === 4) {
+      blocks.forEach(function (b) {
+        var en = b.querySelector('.en'); en.classList.add('hid');
+        en.addEventListener('click', function () { en.classList.toggle('hid'); });
+      });
+      ctl = revealCtl();
+    }
+  } else if (S.stage === 2) {
+    box.appendChild(lineBlock(0, d, function (e) {
+      origParts(d).forEach(function (p) {
+        if (p.k === 'ck') e.appendChild(blank(p.x, 'c', p.t));
+        else if (p.k === 'slot') e.appendChild(el('span', 'sw', p.x));
+        else e.appendChild(document.createTextNode(p.x));
+      });
+    }));
+    [1, 2].forEach(function (k) {
+      box.appendChild(lineBlock(k, d, function (e) {
+        exParts(d.x[k - 1][0], d).forEach(function (p) {
+          if (p.k === 'ck') e.appendChild(blank(p.x, 'c', p.t));
+          else if (p.k === 'slot') e.appendChild(el('span', 'sw', p.x));
+          else e.appendChild(document.createTextNode(p.x));
+        });
+      }));
+    });
+    ctl = revealCtl();
+  } else {
+    ctl = buildStage3(d, box);
+  }
+  var mk = el('div', 'mark');
+  var r = el('div', 'ctl2');
+  r.appendChild(btn('no', '還不熟', function () { finish(false); }));
+  if (ctl) r.appendChild(ctl);
+  r.appendChild(btn('yes', '會了', function () { finish(true); }));
+  mk.appendChild(r); box.appendChild(mk);
+
+  paintStageTabs(); paintPlay();
+}
+function toggleBlank(b) { b.classList.toggle('rv'); }
+stageEl.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.bl'); if (b) toggleBlank(b); });
+stageEl.addEventListener('keydown', function (e) {
+  var b = e.target.closest && e.target.closest('.bl');
+  if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleBlank(b); }
+});
+function revealCtl() {
+  var on = false;
+  var ab = btn('', '全部看答案', function () {
+    on = !on;
+    Array.prototype.forEach.call(stageEl.querySelectorAll('.bl'), function (b) { b.classList.toggle('rv', on); });
+    Array.prototype.forEach.call(stageEl.querySelectorAll('.en'), function (e) { e.classList.toggle('hid', !on); });
+    ab.textContent = on ? '全部蓋住' : '全部看答案';
+  });
+  return ab;
+}
+
+/* 第③階段：語塊保留，被換掉的字蓋住，口說自評 */
+function buildStage3(d, box) {
+  var n = 0;
+  box.appendChild(lineBlock(0, d, function (e) {
+    origParts(d).forEach(function (p) {
+      if (p.k === 'ck') e.appendChild(chunkSpan({ t: p.t, x: p.x, l: p.l }));
+      else if (p.k === 'slot') { n++; e.appendChild(blank(p.x, 'sl')); }
+      else e.appendChild(document.createTextNode(p.x));
+    });
+  }));
+  [1, 2].forEach(function (k) {
+    box.appendChild(lineBlock(k, d, function (e) {
+      exParts(d.x[k - 1][0], d).forEach(function (p) {
+        if (p.k === 'ck') e.appendChild(chunkSpan({ t: p.t, x: p.x, l: p.l }));
+        else if (p.k === 'slot') { n++; e.appendChild(blank(p.x, 'sl')); }
+        else e.appendChild(document.createTextNode(p.x));
+      });
+    }));
+  });
+  if (!n) {
+    box.appendChild(el('p', 'help', d.isP ? '這是整句固定說法，不用換字。請看例句，直接念出來。' : '這句沒有蓋住的字，請直接聽、念。'));
+    return null;
+  }
+  return revealCtl();
+}
+function finish(ok) {
+  var i = S.idx; mark(i, ok); stopChain();
+  if (S.review) {
+    var dl = dueList().filter(function (n) { return n > i; });
+    if (dl.length) { go(dl[0]); note('已記錄。', 1500); return; }
+    S.review = false; paintReview(); note('今天的複習到這裡，辛苦了！', 3000); return;
+  }
+  if (i < D.length - 1) { go(i + 1); note('已記錄。', 1500); }
+  else note('已記錄。100 句都練完囉！', 3000);
+}
+function go(n) {
+  if (n < 0 || n >= D.length) return;
+  stopChain(); S.idx = n; S.stage = 1; S.tag = '';
+  persist(); render(); paintNav(); hideTip(); window.scrollTo(0, 0);
+  prefetchSentence(S.idx); prefetchSentence(S.idx + 1);
+}
+function stepTo(d) {
+  var list = S.review ? dueList() : null;
+  if (list) {
+    var c = list.filter(function (n) { return d > 0 ? n > S.idx : n < S.idx; });
+    if (!c.length) { note(d > 0 ? '已經是最後一句待複習了。' : '已經是第一句待複習了。', 1800); return; }
+    go(d > 0 ? c[0] : c[c.length - 1]);
+  } else go(S.idx + d);
+}
+function paintStageTabs() { Array.prototype.forEach.call($('stages').querySelectorAll('button'), function (b) { b.setAttribute('aria-checked', String(b.getAttribute('data-s') === String(S.stage))); }); }
+function paintNav() {
+  var i = S.idx, p = P[i + 1];
+  $('posTxt').textContent = '第 ' + (i + 1) + ' / ' + D.length + ' 句';
+  var bd = $('badge');
+  bd.hidden = !p; bd.className = 'badge' + (!p ? '' : p.b >= 1 ? ' ok' : ' no'); bd.textContent = !p ? '' : p.b >= 1 ? '✓ 會了' : '還不熟';
+  $('prev').disabled = !S.review && i <= 0; $('next').disabled = !S.review && i >= D.length - 1;
+}
+function paintReview() { $('review').classList.toggle('on', S.review); $('review').setAttribute('aria-pressed', String(S.review)); paintNav(); }
+
+/* ---------- 音訊 ---------- */
+var au = new Audio(); au.preload = 'auto';
+try { au.preservesPitch = true; au.webkitPreservesPitch = true; } catch (e) {}
+var blobURL = '';
+function pad3(n) { return ('00' + n).slice(-3); }
+function clipURL(i, part, tag) { return 'audio/' + part + pad3(i + 1) + (tag || '') + '.mp3'; }
+var wl = null;
+function wake() { try { if (navigator.wakeLock && !wl) navigator.wakeLock.request('screen').then(function (l) { wl = l; l.addEventListener('release', function () { wl = null; }); }, function () {}); } catch (e) {} }
+function unwake() { try { if (wl) wl.release(); } catch (e) {} wl = null; }
+function paintPlay() {
+  $('icoPlay').hidden = S.playing; $('icoPause').hidden = !S.playing;
+  $('playTxt').textContent = S.playing ? '暫停' : '連播三句';
+  blocks.forEach(function (b, k) { b.classList.toggle('on', S.playing && b && (k === 0 ? '' : k === 1 ? 'a' : 'b') === S.tag); });
+}
+function stopChain() { S.token++; clearTimeout(S.timer); S.chain = []; try { au.pause(); } catch (e) {} S.playing = false; paintPlay(); unwake(); }
+function fail(t) { if (t !== S.token) return; stopChain(); note('音檔載入失敗。請確認網路連線與靜音鍵，再按一次播放。'); }
+function startPlay(t) {
+  au.playbackRate = S.rate;
+  var pr = au.play();
+  if (pr && pr.catch) pr.catch(function (e) {
+    if (t !== S.token) return;
+    if (e && e.name === 'NotAllowedError') { stopChain(); note('瀏覽器擋住自動播放，請再點一次播放。'); }
+  });
+}
+var cache = {};
+function prefetch(url) {
+  if (cache[url]) return; cache[url] = 'p';
+  fetch(url).then(function (r) { if (!r.ok) throw 0; return r.blob(); }).then(function (b) { cache[url] = URL.createObjectURL(b); }).catch(function () { delete cache[url]; });
+}
+function prefetchSentence(i) {
+  if (i < 0 || i >= D.length) return;
+  (S.gender === 'b' ? ['f', 'm'] : [S.gender]).forEach(function (p) { ['', 'a', 'b'].forEach(function (g) { prefetch(clipURL(i, p, g)); }); });
+}
+function playClip(i, tag) {
+  clearTimeout(S.timer); S.token++;
+  var t = S.token, part;
+  if (S.gender === 'b') { part = S.turn; S.turn = S.turn === 'f' ? 'm' : 'f'; } else part = S.gender;
+  S.tag = tag; S.playing = true; note(''); paintPlay();
+  var url = clipURL(i, part, tag), retried = false; S.url = url;
+  au.onended = function () {
+    if (t !== S.token) return;
+    if (S.chain.length) {
+      var nx = S.chain.shift();
+      S.timer = setTimeout(function () { if (t === S.token) playClip(S.idx, nx); }, S.gap * 1000);
+    } else { S.playing = false; paintPlay(); unwake(); }
+  };
+  au.onerror = function () {
+    if (t !== S.token) return;
+    if (retried) { fail(t); return; }
+    retried = true;
+    fetch(url).then(function (r) { if (!r.ok) throw new Error('http'); return r.blob(); }).then(function (b) {
+      if (t !== S.token) return;
+      if (blobURL) URL.revokeObjectURL(blobURL);
+      blobURL = URL.createObjectURL(b); au.src = blobURL; startPlay(t);
+    }).catch(function () { fail(t); });
+  };
+  au.src = (cache[url] && cache[url] !== 'p') ? cache[url] : url; startPlay(t); wake();
+}
+
+/* ---------- 句子總覽 ---------- */
+var gridEl = $('grid'), rowsEl = $('rows'), pickerEl = $('picker');
+function openPicker() {
+  gridEl.innerHTML = '';
+  for (var i = 0; i < D.length; i++) (function (i) {
+    var p = P[i + 1];
+    var b = btn('cell' + (i === S.idx ? ' cur' : p ? (p.b >= 1 ? ' ok' : ' no') : ''), String(i + 1), function () { closePicker(); S.review = false; paintReview(); go(i); });
+    b.setAttribute('aria-label', '第 ' + (i + 1) + ' 句' + (p ? (p.b >= 1 ? '，已會' : '，還不熟') : ''));
+    gridEl.appendChild(b);
+  })(i);
+  $('search').value = ''; filterPicker('');
+  pickerEl.hidden = false; document.body.style.overflow = 'hidden'; pickerEl.scrollTop = 0;
+}
+function closePicker() { pickerEl.hidden = true; document.body.style.overflow = ''; }
+function filterPicker(q) {
+  q = q.trim().toLowerCase();
+  gridEl.hidden = !!q; rowsEl.hidden = !q; rowsEl.innerHTML = '';
+  var n = 0;
+  if (q) D.forEach(function (d, i) {
+    if (d.e.toLowerCase().indexOf(q) < 0 && d.z.indexOf(q) < 0) return;
+    n++;
+    var li = el('li'), b = btn('', '', function () { closePicker(); S.review = false; paintReview(); go(i); });
+    b.appendChild(el('span', 'n', String(i + 1))); b.appendChild(el('span', 't', d.e)); li.appendChild(b); rowsEl.appendChild(li);
+  });
+  $('empty').hidden = !q || n > 0;
+}
+
+/* ---------- 控制 ---------- */
+$('prev').addEventListener('click', function () { stepTo(-1); });
+$('next').addEventListener('click', function () { stepTo(1); });
+$('pos').addEventListener('click', openPicker);
+$('pclose').addEventListener('click', closePicker);
+$('search').addEventListener('input', function () { filterPicker(this.value); });
+$('stages').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  var s = parseInt(b.getAttribute('data-s'), 10); if (s === S.stage) return;
+  stopChain(); S.stage = s; render(); hideTip();
+});
+$('play').addEventListener('click', function () {
+  if (S.playing) { stopChain(); return; }
+  S.chain = ['a', 'b']; playClip(S.idx, '');
+});
+$('gender').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  S.gender = b.getAttribute('data-g'); S.turn = 'f'; paintSeg('gender', 'data-g', S.gender); persist(); prefetchSentence(S.idx);
+});
+$('spd').addEventListener('click', function () {
+  S.rate = SPEEDS[(SPEEDS.indexOf(S.rate) + 1) % SPEEDS.length]; au.playbackRate = S.rate; paintSpd(); persist();
+});
+function paintSpd() { $('spd').textContent = S.rate.toFixed(1) + '×'; $('spd').setAttribute('aria-label', '語速 ' + S.rate.toFixed(1) + ' 倍，點一下切換'); }
+function paintSeg(id, attr, val) {
+  Array.prototype.forEach.call($(id).querySelectorAll('button'), function (b) { b.setAttribute('aria-checked', String(b.getAttribute(attr) === val)); });
+}
+$('gap').addEventListener('change', function () { S.gap = parseFloat(this.value); persist(); });
+$('zh').addEventListener('change', function () { S.zh = this.checked; document.body.classList.toggle('nozh', !S.zh); persist(); });
+$('ck').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  S.ck = b.getAttribute('data-c'); paintSeg('ck', 'data-c', S.ck); applyCk(); persist();
+});
+function applyCk() { document.body.classList.remove('ck-ul', 'ck-color', 'ck-off'); document.body.classList.add('ck-' + S.ck); }
+$('review').addEventListener('click', function () {
+  stopChain();
+  if (!S.review) {
+    var dl = dueList();
+    if (!dl.length) { note('目前沒有待複習的句子。', 2500); return; }
+    S.review = true; if (!due(S.idx)) { go(dl[0]); }
+  } else S.review = false;
+  paintReview();
+});
+$('clear').addEventListener('click', function () {
+  if (!window.confirm('確定要清除這台裝置上所有句子的學習紀錄嗎？')) return;
+  P = {}; persistP(); S.review = false; paintSum(); paintReview();
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pickerEl.hidden) closePicker(); });
+
+/* ---------- 初始化 ---------- */
+$('gap').value = String(S.gap); $('zh').checked = S.zh; document.body.classList.toggle('nozh', !S.zh);
+paintSeg('gender', 'data-g', S.gender); paintSeg('ck', 'data-c', S.ck); paintSpd(); applyCk();
+render(); paintNav(); paintSum(); paintReview(); prefetchSentence(S.idx); prefetchSentence(S.idx + 1);
+window.addEventListener('pagehide', function () { try { au.pause(); } catch (e) {} });
+window.__app = { S: S, D: D, exParts: exParts, origParts: origParts, due: due, go: go };
+})();
+</script>
+</body>
+</html>

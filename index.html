@@ -195,6 +195,11 @@ select{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1
       </div>
       <label class="check"><input type="checkbox" id="zh" checked> 顯示中文（第③④階段一定會顯示）</label>
       <div class="row">
+        <div class="lbl">離線音檔</div>
+        <button type="button" class="plain" id="dlAll">預先下載全部音檔（約 15 MB）</button>
+        <p class="tip-s" id="dlMsg">音檔播過一次就會存在這台裝置，之後不用再下載。想一次下載完，可以按上面的按鈕，建議在有 Wi-Fi 時做。</p>
+      </div>
+      <div class="row">
         <div class="lbl">學習紀錄</div>
         <button type="button" class="plain" id="clear">清除這台裝置上的學習紀錄</button>
         <p class="tip-s">學習紀錄只存在這台裝置的瀏覽器裡。請不要用無痕瀏覽，也不要清除網站資料，否則紀錄會消失。</p>
@@ -607,9 +612,29 @@ function startPlay(t) {
   });
 }
 var cache = {};
+/* 音檔只下載一次：存進瀏覽器的 Cache Storage，之後直接從本機讀 */
+var CACHE_NAME = 'quotes-audio-v1';
+var cstore = null;
+function openStore() {
+  if (!cstore) cstore = (window.caches ? caches.open(CACHE_NAME) : Promise.reject(0)).catch(function () { return null; });
+  return cstore;
+}
+function loadClip(url) {
+  return openStore().then(function (c) {
+    if (!c) return fetch(url).then(function (r) { if (!r.ok) throw 0; return r; });
+    return c.match(url).then(function (hit) {
+      if (hit) return hit;
+      return fetch(url).then(function (r) {
+        if (!r.ok) throw 0;
+        try { c.put(url, r.clone()).catch(function () {}); } catch (e) {}
+        return r;
+      });
+    });
+  }).then(function (r) { return r.blob(); }).then(function (b) { return URL.createObjectURL(b); });
+}
 function prefetch(url) {
   if (cache[url]) return; cache[url] = 'p';
-  fetch(url).then(function (r) { if (!r.ok) throw 0; return r.blob(); }).then(function (b) { cache[url] = URL.createObjectURL(b); }).catch(function () { delete cache[url]; });
+  loadClip(url).then(function (u) { cache[url] = u; }).catch(function () { delete cache[url]; });
 }
 function prefetchSentence(i) {
   if (i < 0 || i >= D.length) return;
@@ -709,6 +734,25 @@ $('review').addEventListener('click', function () {
     S.review = true; if (!due(S.idx)) { go(dl[0]); }
   } else S.review = false;
   paintReview();
+});
+$('dlAll').addEventListener('click', function () {
+  var btnEl = this, msg = $('dlMsg');
+  if (!window.caches) { msg.textContent = '這個瀏覽器不支援離線儲存，音檔會每次從網路播放。'; return; }
+  btnEl.disabled = true;
+  var urls = [];
+  for (var i = 0; i < D.length; i++) ['f', 'm'].forEach(function (p) { ['', 'a', 'b'].forEach(function (g) { urls.push(clipURL(i, p, g)); }); });
+  var done = 0, fail = 0, next = 0;
+  function show() { msg.textContent = '下載中… ' + (done + fail) + ' / ' + urls.length + (fail ? '（失敗 ' + fail + '）' : ''); }
+  function worker() {
+    if (next >= urls.length) return Promise.resolve();
+    var u = urls[next++];
+    return loadClip(u).then(function (b) { URL.revokeObjectURL(b); done++; }, function () { fail++; }).then(function () { show(); return worker(); });
+  }
+  show();
+  Promise.all([worker(), worker(), worker(), worker()]).then(function () {
+    btnEl.disabled = false;
+    msg.textContent = fail ? '有 ' + fail + ' 個音檔沒下載成功，請確認網路後再按一次。' : '全部音檔已存在這台裝置，之後不用再下載。';
+  });
 });
 $('clear').addEventListener('click', function () {
   if (!window.confirm('確定要清除這台裝置上所有句子的學習紀錄嗎？')) return;
